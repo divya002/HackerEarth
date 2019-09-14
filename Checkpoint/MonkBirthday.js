@@ -55,12 +55,12 @@ function main(input) {
   }
 }
 function calculate(N, M, L, W, WC) {
-  let high = 100000000;
+  let high = 1000000000;
   //let high = 10;
-  let low = 0;
-  let ans = -1;
+  let low = 1;
+  let ans;
   while (low <= high) {
-    let mid = Math.floor((high + low) / 2);
+    let mid = (high + low) >> 1;
     if (checkCount(mid, N, M, L, W, WC)) {
       ans = mid;
       high = mid - 1;
@@ -73,7 +73,7 @@ function calculate(N, M, L, W, WC) {
 function checkCount(num, N, M, L, W, WC) {
   let WC2 = Object.assign({}, WC);
   for (let i = 0; i < M; i++) {
-    let temp = binaryNearestSearch(W, L[i]);
+    let temp = binaryNearestSearch(W,N, L[i]);
     WC2[W[temp]] -= num;
   }
   let sum = 0;
@@ -84,7 +84,7 @@ function checkCount(num, N, M, L, W, WC) {
   return true;
 }
 function mergesort(left, right, arr) {
-  let mid = Math.floor((right + left) / 2);
+  let mid = (right + left)>>1;
   if (left < right) {
     mergesort(left, mid, arr);
     mergesort(mid + 1, right, arr);
@@ -132,15 +132,15 @@ function merge(left, mid, right, arr) {
   //return arr;
 }
 
-function binaryNearestSearch(arr, element) {
+function binaryNearestSearch(arr,length, element) {
   let left = 0;
-  let right = arr.length - 1;
+  let right = length - 1;
   return binary(arr, left, right, element);
 }
 function binary(arr, left, right, element) {
   let mid = null;
   while (left <= right) {
-    mid = Math.floor((left + right) / 2);
+    mid = (left + right) >>1 ;
     if (arr[mid] === element) return mid;
     else if (arr[mid] < element) {
       left = mid + 1;
@@ -148,7 +148,7 @@ function binary(arr, left, right, element) {
       right = mid - 1;
     }
   }
-  return (left<right)?left:right;
+  return (left<right||left==right)?left:right;
 }
 
 //input = "1\n5 5\n1 2 3 4 5\n1 2 3 4 5\n5 4 3 2 1";
