@@ -17,35 +17,72 @@ function main(input) {
   let testcase = parseInt(input.split("\n")[0]);
   let count = 0;
   while (testcase > 0) {
-    cakeNumbers = parseInt(input.split("\n")[1 + count].split(' ')[0]);
-    friendNumbers = parseInt(input.split("\n")[1 + count].split(' ')[1]);
-    friendLimit = input
+    let N = parseInt(input.split("\n")[1 + count].split(" ")[0]);
+    let M = parseInt(input.split("\n")[1 + count].split(" ")[1]);
+    let L = input
       .split("\n")
       [2 + count].split(" ")
       .map(Number);
-    cakeWeight = input
+    let W = input
       .split("\n")
       [3 + count].split(" ")
       .map(Number);
-    cakeEachWeightCount = input
+    let C = input
       .split("\n")
       [4 + count].split(" ")
       .map(Number);
 
-    minTime = 0;
+    let WC = {};
+    for (let i = 0; i < N; i++) {
+      WC[W[i]] = C[i];
+    }
+    mergesort(0, M - 1, L);
+    //console.log(L);
+    //console.log(WC);
+    mergesort(0, N - 1, W);
 
-    process.stdout.write(minTime + "\n");
-    mergesort(0,friendNumbers-1,friendLimit);
-    mergesort(0,cakeNumbers-1,cakeWeight);
-    mergesort(0,2,cakeEachWeightCount);
-    console.log(friendLimit);
-    console.log(cakeWeight);
-    console.log(cakeEachWeightCount);
+    let minTime = -1;
+    if (W[N - 1] <= L[M - 1]) {
+      minTime = calculate(N, M, L, W, WC);
+      process.stdout.write(minTime + "\n");
+    } else {
+      process.stdout.write(minTime + "\n");
+    }
+
+    //console.log("ans "+answer);
     testcase--;
     count = count + 4;
   }
 }
-
+function calculate(N, M, L, W, WC) {
+  let high = 100000000;
+  //let high = 10;
+  let low = 0;
+  let ans = -1;
+  while (low <= high) {
+    let mid = Math.floor((high + low) / 2);
+    if (checkCount(mid, N, M, L, W, WC)) {
+      ans = mid;
+      high = mid - 1;
+    } else {
+      low = mid + 1;
+    }
+  }
+  return ans;
+}
+function checkCount(num, N, M, L, W, WC) {
+  let WC2 = Object.assign({}, WC);
+  for (let i = 0; i < M; i++) {
+    let temp = binaryNearestSearch(W, L[i]);
+    WC2[W[temp]] -= num;
+  }
+  let sum = 0;
+  for (let i = N-1; i >= 0; i--) {
+    sum = sum + WC2[W[i]];
+    if (sum > 0) return false;
+  }
+  return true;
+}
 function mergesort(left, right, arr) {
   let mid = Math.floor((right + left) / 2);
   if (left < right) {
@@ -95,8 +132,25 @@ function merge(left, mid, right, arr) {
   //return arr;
 }
 
+function binaryNearestSearch(arr, element) {
+  let left = 0;
+  let right = arr.length - 1;
+  return binary(arr, left, right, element);
+}
+function binary(arr, left, right, element) {
+  let mid = null;
+  while (left <= right) {
+    mid = Math.floor((left + right) / 2);
+    if (arr[mid] === element) return mid;
+    else if (arr[mid] < element) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+  return (left<right)?left:right;
+}
 
-
-
-let input="1\n5 5\n1 2 3 4 5\n1 2 3 4 5\n5 4 3 2 1";
-main(input);
+//input = "1\n5 5\n1 2 3 4 5\n1 2 3 4 5\n5 4 3 2 1";
+//main(input);
+//console.log(binaryNearestSearch([1,2,3,4,6,7],5));
